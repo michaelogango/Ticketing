@@ -1,0 +1,36 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env
+
+# Flask instance folder
+instance/
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Logs
+logs/
+*.log
+
+# Pytest cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE and editor files
+.vscode/
+*.swp
+*.swo
+*.swn
+.idea/
+
+# Deployment files
+*.pem
+*.key
