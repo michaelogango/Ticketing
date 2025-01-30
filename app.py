@@ -14,6 +14,13 @@ migrate=Migrate(app, db)
 
 api=Api(app)
 
+
+class Home(Resource):
+    def get(self):
+        return {"message":"Welcome to the Ticketing System"}, 200
+
+api.add_resource(Home, '/')
+
 class UserResource(Resource):
     def get(self):
         return make_response([user.to_dict() for user in User.query.all()],200)

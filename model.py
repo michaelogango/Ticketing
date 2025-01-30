@@ -14,6 +14,14 @@ class User(db.Model):
 
     tickets=db.relationship('Ticket',backref='user',lazy=True)
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone": self.phone
+        }
+
 
 
 class Ticket(db.Model):
