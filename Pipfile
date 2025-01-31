@@ -10,6 +10,7 @@ migrate = "*"
 flask-migrate = "*"
 flask-restful = "*"
 faker = "*"
+flask-cors = "*"
 
 [dev-packages]
 

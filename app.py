@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from model import db, User, Ticket,Event, Venue
 from flask_restful import Api, Resource
+from flask_cors import CORS
 
 app=Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///ticket.db'
@@ -14,6 +15,7 @@ migrate=Migrate(app, db)
 
 api=Api(app)
 
+CORS(app) #ALLOWING ALL ORIGINS BY DEFAULT
 
 class Home(Resource):
     def get(self):
@@ -114,14 +116,14 @@ api.add_resource(TicketById, '/tickets/<int:ticket_id>')
 class EventResource(Resource):
     def get(self):
         events=Event.query.all()
-        return jsonify([{"id": event.id, "name": event.name, "description": event.description, "date": event.date} for event in events])
+        return jsonify([{"id": event.id, "name": event.title, "description": event.description, "date": event.date} for event in events])
 
     def post(self):
         data=request.get_json()
-        event=Event(name=data['name'], description=data['description'], date=data['date'])
+        event=Event(name=data['title'], description=data['description'], date=data['date'])
         db.session.add(event)
         db.session.commit()
-        return jsonify({"message":"event created Successfully", "id": event.id, "name": event.name, "description": event.description, "date": event.date}), 201
+        return jsonify({"message":"event created Successfully", "id": event.id, "name": event.title, "description": event.description, "date": event.date}), 201
 
 api.add_resource(EventResource, '/events')
 

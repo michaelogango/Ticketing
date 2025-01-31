@@ -29,7 +29,7 @@ class Ticket(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     eventid=db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     userid=db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    ticketType=db.Column(db.String(120), unique=True, nullable=False)
+    ticketType=db.Column(db.String(120), unique=False, nullable=False)
     price=db.Column(db.Float, nullable=False)
     status=db.Column(db.String(120), nullable=False,default='Available')
 
