@@ -31,10 +31,13 @@ class UserResource(Resource):
         user = User(name=data['name'], email=data['email'], phone=data['phone'])
         db.session.add(user)
         db.session.commit()
-        return jsonify({
-            "message": "User created successfully",
-            **user.to_dict()
-        }), 201
+        user_list=[user.to_dict() for user in User.query.all()]
+        response=make_response(user_list, 201)
+        return response
+        # return jsonify({
+        #     "message": "User created successfully",
+        #     **user.to_dict()
+        # }), 201
 
 api.add_resource(UserResource, '/users')
 
