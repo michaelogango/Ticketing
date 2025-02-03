@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy_serializer import SerializerMixin
 from werkzeug.security import generate_password_hash, check_password_hash
+import os
 
 
 db = SQLAlchemy()
@@ -11,7 +12,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    phone = db.Column(db.Integer(), unique=True, nullable=False)
+    phone = db.Column(db.String(10), unique=True, nullable=False)
 
     tickets = db.relationship('Ticket', backref='user', lazy=True)
 

@@ -4,9 +4,10 @@ from flask_migrate import Migrate
 from model import db, User, Ticket, Event, Venue
 from flask_restful import Api, Resource
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ticket.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI') 
 
 db.init_app(app)
 migrate = Migrate(app, db)
