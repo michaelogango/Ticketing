@@ -79,7 +79,7 @@ class TicketResource(Resource):
         )
         db.session.add(ticket)
         db.session.commit()
-        return jsonify(ticket.to_dict()), 201
+        return make_response(jsonify(ticket.to_dict()), 201)
 
 api.add_resource(TicketResource, '/tickets')
 
