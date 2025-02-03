@@ -20,7 +20,6 @@ class Home(Resource):
 
 api.add_resource(Home, '/')
 
-
 # User Routes
 class UserResource(Resource):
     def get(self):
@@ -31,16 +30,9 @@ class UserResource(Resource):
         user = User(name=data['name'], email=data['email'], phone=data['phone'])
         db.session.add(user)
         db.session.commit()
-        user_list=[user.to_dict() for user in User.query.all()]
-        response=make_response(user_list, 201)
-        return response
-        # return jsonify({
-        #     "message": "User created successfully",
-        #     **user.to_dict()
-        # }), 201
+        return make_response(jsonify(user.to_dict()), 201)
 
 api.add_resource(UserResource, '/users')
-
 
 class UserById(Resource):
     def get(self, user_id):
@@ -49,7 +41,7 @@ class UserById(Resource):
             return jsonify({"error": "User not found"}), 404
         return make_response(jsonify(user.to_dict()), 200)
 
-    def put(self, user_id):
+    def patch(self, user_id):
         user = User.query.get(user_id)
         if not user:
             return jsonify({"error": "User not found"}), 404
@@ -58,7 +50,7 @@ class UserById(Resource):
         user.email = data.get('email', user.email)
         user.phone = data.get('phone', user.phone)
         db.session.commit()
-        return jsonify({"message": "User updated successfully!"})
+        return make_response(jsonify({"message": "User updated successfully!", **user.to_dict()}), 200)
 
     def delete(self, user_id):
         user = User.query.get(user_id)
@@ -70,20 +62,10 @@ class UserById(Resource):
 
 api.add_resource(UserById, '/users/<int:user_id>')
 
-
 # Ticket Routes
 class TicketResource(Resource):
     def get(self):
-        return jsonify([
-            {
-                "id": ticket.id,
-                "eventid": ticket.eventid,
-                "userid": ticket.userid,
-                "ticketType": ticket.ticketType,
-                "price": ticket.price,
-                "status": ticket.status
-            } for ticket in Ticket.query.all()
-        ])
+        return jsonify([ticket.to_dict() for ticket in Ticket.query.all()])
 
     def post(self):
         data = request.get_json()
@@ -96,13 +78,9 @@ class TicketResource(Resource):
         )
         db.session.add(ticket)
         db.session.commit()
-        return jsonify({
-            "message": "Ticket created successfully",
-            "id": ticket.id
-        }), 201
+        return jsonify(ticket.to_dict()), 201
 
 api.add_resource(TicketResource, '/tickets')
-
 
 class TicketById(Resource):
     def get(self, ticket_id):
@@ -110,6 +88,17 @@ class TicketById(Resource):
         if not ticket:
             return jsonify({"error": "Ticket not found"}), 404
         return make_response(jsonify(ticket.to_dict()), 200)
+
+    def patch(self, ticket_id):
+        ticket = Ticket.query.get(ticket_id)
+        if not ticket:
+            return jsonify({"error": "Ticket not found"}), 404
+        data = request.json
+        ticket.ticketType = data.get('ticketType', ticket.ticketType)
+        ticket.price = data.get('price', ticket.price)
+        ticket.status = data.get('status', ticket.status)
+        db.session.commit()
+        return jsonify({"message": "Ticket updated successfully!", **ticket.to_dict()}), 200
 
     def delete(self, ticket_id):
         ticket = Ticket.query.get(ticket_id)
@@ -121,22 +110,10 @@ class TicketById(Resource):
 
 api.add_resource(TicketById, '/tickets/<int:ticket_id>')
 
-
 # Event Routes
 class EventResource(Resource):
     def get(self):
-        return jsonify([
-            {
-                "id": event.id,
-                "title": event.title,
-                "description": event.description,
-                "date": event.date,
-                "time": event.time,
-                "venueid": event.venueid,
-                "userid": event.userid,
-                "ticketprice": event.ticketprice
-            } for event in Event.query.all()
-        ])
+        return jsonify([event.to_dict() for event in Event.query.all()])
 
     def post(self):
         data = request.get_json()
@@ -151,10 +128,9 @@ class EventResource(Resource):
         )
         db.session.add(event)
         db.session.commit()
-        return jsonify({"message": "Event created successfully", "id": event.id}), 201
+        return make_response(jsonify(event.to_dict()), 201)
 
 api.add_resource(EventResource, '/events')
-
 
 class EventById(Resource):
     def get(self, event_id):
@@ -162,6 +138,19 @@ class EventById(Resource):
         if not event:
             return jsonify({"error": "Event not found"}), 404
         return make_response(jsonify(event.to_dict()), 200)
+
+    def patch(self, event_id):
+        event = Event.query.get(event_id)
+        if not event:
+            return jsonify({"error": "Event not found"}), 404
+        data = request.json
+        event.title = data.get('title', event.title)
+        event.date = data.get('date', event.date)
+        event.time = data.get('time', event.time)
+        event.ticketprice = data.get('ticketprice', event.ticketprice)
+        event.description = data.get('description', event.description)
+        db.session.commit()
+        return make_response(jsonify({"message": "Event updated successfully!", **event.to_dict()}), 200)
 
     def delete(self, event_id):
         event = Event.query.get(event_id)
@@ -173,55 +162,52 @@ class EventById(Resource):
 
 api.add_resource(EventById, '/events/<int:event_id>')
 
-
 # Venue Routes
 class VenueResource(Resource):
     def get(self):
-        return jsonify([
-            {
-                "id": venue.id,
-                "name": venue.name,
-                "location": venue.location,
-                "capacity": venue.capacity
-            } for venue in Venue.query.all()
-        ])
+        return jsonify([venue.to_dict() for venue in Venue.query.all()])
 
     def post(self):
         data = request.get_json()
         venue = Venue(
-            name=data['name'],
-            location=data['location'],
-            capacity=data['capacity']
-        )
+        name=data['name'],
+        location=data['location'],
+        capacity=data['capacity']
+    )
         db.session.add(venue)
         db.session.commit()
-        return jsonify({"message": "Venue created successfully", "id": venue.id}), 201
+        return make_response(jsonify(venue.to_dict()), 201)
 
 api.add_resource(VenueResource, '/venues')
-
 
 class VenueById(Resource):
     def get(self, venue_id):
         venue = Venue.query.get(venue_id)
         if not venue:
             return jsonify({"error": "Venue not found"}), 404
-        return make_response(jsonify({
-            "id": venue.id,
-            "name": venue.name,
-            "location": venue.location,
-            "capacity": venue.capacity
-        }), 200)
+        return make_response(jsonify(venue.to_dict()), 200)
+
+    def patch(self, venue_id):
+        venue = Venue.query.get(venue_id)
+        if not venue:
+            return jsonify({"error": "Venue not found"}), 404
+        data = request.json
+        venue.name = data.get('name', venue.name)
+        venue.location = data.get('location', venue.location)
+        venue.capacity = data.get('capacity', venue.capacity)
+        db.session.commit()
+        return make_response(jsonify({"message": "Venue updated successfully!", **venue.to_dict()}), 200)
 
     def delete(self, venue_id):
         venue = Venue.query.get(venue_id)
         if not venue:
             return jsonify({"error": "Venue not found"}), 404
+        Event.query.filter_by(venueid=venue_id).update({Event.venueid: None})
         db.session.delete(venue)
         db.session.commit()
         return jsonify({"message": "Venue deleted successfully!"})
 
 api.add_resource(VenueById, '/venues/<int:venue_id>')
-
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
